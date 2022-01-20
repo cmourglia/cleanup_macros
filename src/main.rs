@@ -204,7 +204,8 @@ impl<'a> Scanner<'a> {
     }
 
     fn advance(&mut self) {
-        self.current += 1;
+        // Advancing from one character is an error in the context of utf8
+        self.current += self.curr_char.unwrap_or_default().len_utf8();
         self.prev_char = self.curr_char;
         self.curr_char = self.next_char;
         self.next_char = self.chars.next();
