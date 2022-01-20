@@ -258,7 +258,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     for entry in WalkDir::new(root) {
         let path = entry?.into_path();
         // We ignore vrml as it contains weird stuff
-        if path.to_str().unwrap().contains(&"VRML") {
+        if path.to_str().unwrap().contains(&"Yacc") || path.to_str().unwrap().contains(&"Flex") {
             continue;
         }
 
