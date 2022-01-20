@@ -29,6 +29,7 @@ struct Token<'a> {
 struct Scanner<'a> {
     src: &'a str,
     chars: Chars<'a>,
+    prev_prev_char: Option<char>,
     prev_char: Option<char>,
     curr_char: Option<char>,
     next_char: Option<char>,
@@ -43,6 +44,7 @@ impl<'a> Scanner<'a> {
         Self {
             src,
             chars,
+            prev_prev_char: None,
             prev_char: None,
             curr_char: None,
             next_char,
@@ -151,8 +153,15 @@ impl<'a> Scanner<'a> {
             self.advance();
             match self.curr_char {
                 Some(c) => {
-                    if c == start_char && self.prev_char.unwrap_or_default() != '\\' {
-                        break;
+                    if c == start_char {
+                        // Hmm, `"\\"` was causing some problems :D
+                        if self.prev_char.unwrap_or_default() == '\\'
+                            && self.prev_prev_char.unwrap_or_default() == '\\'
+                        {
+                            break;
+                        } else if self.prev_char.unwrap_or_default() != '\\' {
+                            break;
+                        }
                     }
                 }
                 None => break,
@@ -206,6 +215,8 @@ impl<'a> Scanner<'a> {
     fn advance(&mut self) {
         // Advancing from one character is an error in the context of utf8
         self.current += self.curr_char.unwrap_or_default().len_utf8();
+
+        self.prev_prev_char = self.prev_char;
         self.prev_char = self.curr_char;
         self.curr_char = self.next_char;
         self.next_char = self.chars.next();
