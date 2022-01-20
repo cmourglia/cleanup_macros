@@ -18,6 +18,7 @@ enum TokenType {
     Or,
     Eq,
     Neq,
+    Xor,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -98,6 +99,8 @@ impl<'a> Scanner<'a> {
             self.make_token(TokenType::Eq)
         } else if str == "NEQ" {
             self.make_token(TokenType::Neq)
+        } else if str == "XOR" {
+            self.make_token(TokenType::Xor)
         } else {
             self.make_token(TokenType::Identifier)
         }
@@ -239,6 +242,7 @@ fn handle_file(str: &str) -> String {
             TokenType::Or => out.push_str("||"),
             TokenType::Eq => out.push_str("=="),
             TokenType::Neq => out.push_str("!="),
+            TokenType::Xor => out.push_str("^"),
             _ => out.push_str(token.lexeme),
         }
     }
