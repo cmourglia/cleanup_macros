@@ -109,19 +109,13 @@ impl<'a> Scanner<'a> {
     fn handle_comment(&mut self) -> Token<'a> {
         if let Some(next) = self.next_char {
             if next == '*' {
-                let mut nest_level = 1;
                 loop {
                     self.advance();
                     if let Some(c) = self.curr_char {
                         if let Some(n) = self.next_char {
-                            if c == '/' && n == '*' {
-                                nest_level += 1;
-                            } else if c == '*' && n == '/' {
-                                nest_level -= 1;
-                                if nest_level == 0 {
-                                    self.advance();
-                                    return self.make_token(TokenType::Comment);
-                                }
+                            if c == '*' && n == '/' {
+                                self.advance();
+                                return self.make_token(TokenType::Comment);
                             }
                         } else {
                             break;
